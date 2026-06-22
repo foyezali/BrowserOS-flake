@@ -1,0 +1,76 @@
+{
+  description = "BrowserOS — open-source agentic Chromium fork, packaged for Nix";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        lib = pkgs.lib;
+
+        # AppImage doesn't carry a version string — BrowserOS is on a rolling beta.
+        # When updating the AppImage, also bump `src.sha256` below.
+        # Get the new hash with:  nix-prefetch-url --type sha256 <url>
+        src = pkgs.fetchurl {
+          url = "https://files.browseros.com/download/BrowserOS.AppImage";
+          sha256 = "0g4ra9w0r0238a7c8gfzq8z2masvbcrhdghc661k5qb21s1c0p91";
+        };
+
+        browseros = pkgs.appimageTools.wrapType2 {
+          name = "browseros";
+          inherit src;
+
+          # Chromium runtime libs not bundled in the AppImage
+          extraPkgs = pkgs: with pkgs; [
+            libudev0-shim libusb1 openssl nss nspr
+            alsa-lib libpulse gtk3 cups
+            xorg.libxshmfence xorg.libxkbcommon xorg.libXdamage xorg.libXrandr
+            mesa wayland dbus libglvnd
+          ];
+
+          extraInstallCommands = ''
+            # Chromium's SUID sandbox can't run from the Nix store → disable it
+            wrapProgram $out/bin/browseros \
+              --add-flags "--no-sandbox"
+
+            # Desktop entry
+            mkdir -p $out/share/applications
+            cat > $out/share/applications/browseros.desktop <<EOF
+            [Desktop Entry]
+            Name=BrowserOS
+            Exec=browseros %U
+            Type=Application
+            Icon=browseros
+            Categories=Network;WebBrowser;
+            MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
+            EOF
+
+            # Icon (extracted from AppImage by wrapType2)
+            if [ -f $out/lib/browseros/browseros.png ]; then
+              install -Dm644 $out/lib/browseros/browseros.png $out/share/pixmaps/browseros.png
+            fi
+          '';
+        };
+      in
+      {
+        packages.default = browseros;
+
+        apps.browseros = {
+          type = "app";
+          program = "${browseros}/bin/browseros";
+        };
+        apps.default = self.apps.${system}.browseros;
+
+        # For the Go CLI sidecar (terminal control from agents like Claude Code)
+        devShells.default = pkgs.mkShell {
+          packages = [ pkgs.go ];
+          shellHook = ''
+            echo "→ install CLI: go install github.com/browseros-ai/BrowserOS/apps/cli/cmd/browseros-cli@latest"
+          '';
+        };
+      });
+}

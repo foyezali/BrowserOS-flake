@@ -1,0 +1,9 @@
+# Nix build output
+result
+result-*
+
+# direnv
+.direnv
+
+# nix profile
+home-manager/
