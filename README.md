@@ -2,7 +2,7 @@
 
 Nix flake packaging the upstream [BrowserOS](https://github.com/browseros-ai/BrowserOS) AppImage.
 
-BrowserOS is an open-source Chromium fork with built-in AI agents — alternative to ChatGPT Atlas / Perplexity Comet. License: **AGPL-3.0**.
+BrowserOS is an open-source Chromium fork with built-in AI agents — alternative to ChatGPT Atlas / Perplexity Comet. Upstream license: **AGPL-3.0**. This packaging repo is **MIT**.
 
 ## Install
 
@@ -16,35 +16,43 @@ browseros
 ### Reproducible pinned build
 
 ```bash
-nix build github:foyezali/BrowserOS-flake#browseros
+nix build github:foyezali/BrowserOS-flake#default
 ./result/bin/browseros
 ```
 
-### Inside a NixOS configuration
+Or just:
 
-```nix
-{ pkgs, ... }:
-{
-  environment.systemPackages = [
-    (pkgs.callPackage (builtins.fetchTarball {
-      url = "https://github.com/foyezali/BrowserOS-flake/archive/main.tar.gz";
-    }) {}).default
-  ];
-}
+```bash
+nix build github:foyezali/BrowserOS-flake
+./result/bin/browseros
 ```
 
-Or with flakes + home-manager:
+### Inside a flake-based NixOS / home-manager configuration
 
 ```nix
 {
   inputs.browseros-flake.url = "github:foyezali/BrowserOS-flake";
+
   outputs = { self, nixpkgs, home-manager, browseros-flake, ... }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = nixpkgs.legacyPackages.${system};
     in {
-      home.packages = [ browseros-flake.packages.${system}.default ];
+      homeConfigurations.youruser = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [{
+          home.packages = [ browseros-flake.packages.${system}.default ];
+        }];
+      };
     };
+}
+```
+
+For NixOS:
+
+```nix
+{ inputs, pkgs, ... }: {
+  environment.systemPackages = [ inputs.browseros-flake.packages.${pkgs.system}.default ];
 }
 ```
 
@@ -82,6 +90,7 @@ Paste the output into `src.sha256` in `flake.nix`.
 - `--no-sandbox` flag added because Chromium's SUID sandbox can't run from `/nix/store`
 - Desktop entry + icon extracted from the AppImage
 - `meta` attributes for `nix search`, license tracking, and `mainProgram`
+- `update.sh` helper to refresh the AppImage hash
 
 ## Companion CLI (optional)
 
@@ -101,3 +110,9 @@ browseros-cli init
 | AppImage needs FUSE | `wrapType2` extracts the squashfs → no FUSE needed |
 | Missing .so files (nss, nspr, gtk, mesa, etc.) | `extraPkgs` adds them to runtime closure |
 | Desktop integration | Generated `.desktop` + icon in `share/` |
+
+## License
+
+The Nix packaging files in this repository are licensed under the MIT License. See [LICENSE](./LICENSE).
+
+BrowserOS itself is licensed under the AGPL-3.0 license. See [browseros-ai/BrowserOS](https://github.com/browseros-ai/BrowserOS).

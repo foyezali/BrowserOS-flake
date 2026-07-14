@@ -4,6 +4,3 @@ result-*
 
 # direnv
 .direnv
-
-# nix profile
-home-manager/

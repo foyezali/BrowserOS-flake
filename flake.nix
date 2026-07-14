@@ -24,8 +24,10 @@
           name = "browseros";
           inherit src;
 
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+
           # Chromium runtime libs not bundled in the AppImage
-          extraPkgs = pkgs: with pkgs; [
+          extraPkgs = epkgs: with epkgs; [
             libudev0-shim libusb1 openssl nss nspr
             alsa-lib libpulse gtk3 cups
             xorg.libxshmfence xorg.libxkbcommon xorg.libXdamage xorg.libXrandr
@@ -73,6 +75,7 @@ EOF
       in
       {
         packages.default = browseros;
+        packages.browseros = browseros;
 
         apps.browseros = {
           type = "app";
