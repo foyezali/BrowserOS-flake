@@ -56,11 +56,17 @@ cd BrowserOS-flake
 nix build          # or: nix run
 ```
 
-On first build nix auto-generates `flake.lock`.
+The repository does not currently include a `flake.lock`. Run `nix flake lock` after cloning to pin inputs for reproducible builds, or use `nix flake update` to bump them.
 
 ## Updating the AppImage hash
 
 BrowserOS doesn't version their AppImage URL. When you want to bump:
+
+```bash
+./update.sh
+```
+
+Or manually:
 
 ```bash
 nix-prefetch-url --type sha256 https://files.browseros.com/download/BrowserOS.AppImage
@@ -71,9 +77,11 @@ Paste the output into `src.sha256` in `flake.nix`.
 ## What's inside
 
 - `flake.nix` — wraps the upstream AppImage with `appimageTools.wrapType2`
-- `src.sha256` is pinned so the build is reproducible
+- `flake.lock` — run `nix flake lock` locally to pin inputs for reproducible builds
+- `src.sha256` is pinned so the AppImage download is reproducible
 - `--no-sandbox` flag added because Chromium's SUID sandbox can't run from `/nix/store`
 - Desktop entry + icon extracted from the AppImage
+- `meta` attributes for `nix search`, license tracking, and `mainProgram`
 
 ## Companion CLI (optional)
 

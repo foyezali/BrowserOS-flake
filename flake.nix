@@ -39,21 +39,36 @@
 
             # Desktop entry
             mkdir -p $out/share/applications
-            cat > $out/share/applications/browseros.desktop <<EOF
-            [Desktop Entry]
-            Name=BrowserOS
-            Exec=browseros %U
-            Type=Application
-            Icon=browseros
-            Categories=Network;WebBrowser;
-            MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
-            EOF
+            cat > $out/share/applications/browseros.desktop <<'EOF'
+[Desktop Entry]
+Name=BrowserOS
+Exec=browseros %U
+Type=Application
+Icon=browseros
+Categories=Network;WebBrowser;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
+EOF
 
             # Icon (extracted from AppImage by wrapType2)
             if [ -f $out/lib/browseros/browseros.png ]; then
               install -Dm644 $out/lib/browseros/browseros.png $out/share/pixmaps/browseros.png
             fi
           '';
+
+          meta = with lib; {
+            description = "BrowserOS — open-source agentic Chromium fork";
+            longDescription = ''
+              BrowserOS is an open-source Chromium fork with a built-in AI agent.
+              It is a privacy-first alternative to ChatGPT Atlas, Perplexity Comet,
+              and Dia. This package wraps the upstream AppImage for Nix/NixOS.
+            '';
+            homepage = "https://www.browseros.com";
+            license = licenses.agpl3Only;
+            sourceProvenance = with sourceTypes; [ binaryNativeCode ];
+            maintainers = [ ];
+            platforms = [ "x86_64-linux" ];
+            mainProgram = "browseros";
+          };
         };
       in
       {
