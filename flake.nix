@@ -67,7 +67,6 @@ EOF
             homepage = "https://www.browseros.com";
             license = licenses.agpl3Only;
             sourceProvenance = with sourceTypes; [ binaryNativeCode ];
-            maintainers = [ ];
             platforms = [ "x86_64-linux" ];
             mainProgram = "browseros";
           };
