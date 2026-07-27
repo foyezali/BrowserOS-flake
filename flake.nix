@@ -52,28 +52,30 @@
           ];
 
           extraInstallCommands = ''
-                        # Enable hardware video acceleration (VA-API) on Intel GPUs
-                        wrapProgram $out/bin/browseros \
-                          --add-flags "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks" \
-                          --add-flags "--disable-gpu-driver-bug-workarounds" \
-                          --add-flags "--no-sandbox"
+            # Force Intel GPU + Wayland backend for Niri compositor
+            wrapProgram $out/bin/browseros \
+              --set DRI_PRIME 0 \
+              --add-flags "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks" \
+              --add-flags "--disable-gpu-driver-bug-workarounds" \
+              --add-flags "--no-sandbox" \
+              --add-flags "--ozone-platform-hint=auto"
 
-                        # Desktop entry
-                        mkdir -p $out/share/applications
-                        cat > $out/share/applications/browseros.desktop <<'EOF'
-            [Desktop Entry]
-            Name=BrowserOS
-            Exec=browseros %U
-            Type=Application
-            Icon=browseros
-            Categories=Network;WebBrowser;
-            MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
-            EOF
+            # Desktop entry
+            mkdir -p $out/share/applications
+            cat > $out/share/applications/browseros.desktop <<'EOF'
+[Desktop Entry]
+Name=BrowserOS
+Exec=browseros %U
+Type=Application
+Icon=browseros
+Categories=Network;WebBrowser;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
+EOF
 
-                        # Icon (extracted from AppImage by wrapType2)
-                        if [ -f $out/lib/browseros/browseros.png ]; then
-                          install -Dm644 $out/lib/browseros/browseros.png $out/share/pixmaps/browseros.png
-                        fi
+            # Icon (extracted from AppImage by wrapType2)
+            if [ -f $out/lib/browseros/browseros.png ]; then
+              install -Dm644 $out/lib/browseros/browseros.png $out/share/pixmaps/browseros.png
+            fi
           '';
 
           meta = with lib; {
