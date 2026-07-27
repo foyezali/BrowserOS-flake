@@ -53,7 +53,8 @@
                         # Enable hardware video acceleration (VA-API) on Intel GPUs
                         wrapProgram $out/bin/browseros \
                           --add-flags "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks" \
-                          --add-flags "--disable-gpu-driver-bug-workarounds"
+                          --add-flags "--disable-gpu-driver-bug-workarounds" \
+                          --add-flags "--disable-gpu-sandbox"
 
                         # Desktop entry
                         mkdir -p $out/share/applications
