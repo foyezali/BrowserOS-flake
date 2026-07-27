@@ -50,10 +50,6 @@
           ];
 
           extraInstallCommands = ''
-                        # Chromium's SUID sandbox can't run from the Nix store → disable it
-                        wrapProgram $out/bin/browseros \
-                          --add-flags "--no-sandbox"
-
                         # Desktop entry
                         mkdir -p $out/share/applications
                         cat > $out/share/applications/browseros.desktop <<'EOF'
