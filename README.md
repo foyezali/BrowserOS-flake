@@ -62,8 +62,6 @@ cd BrowserOS-flake
 nix build          # or: nix run
 ```
 
-The repository does not currently include a `flake.lock`. Run `nix flake lock` after cloning to pin inputs for reproducible builds, or use `nix flake update` to bump them.
-
 ## Updating the AppImage hash
 
 BrowserOS doesn't version their AppImage URL. When changed:
