@@ -34,7 +34,7 @@
             nss
             nspr
             alsa-lib
-            libpulse
+            pulseaudio
             gtk3
             cups
             xorg.libxshmfence
