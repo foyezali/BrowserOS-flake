@@ -6,8 +6,14 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
@@ -17,7 +23,7 @@
         # Get the new hash with:  nix-prefetch-url --type sha256 <url>
         src = pkgs.fetchurl {
           url = "https://files.browseros.com/download/BrowserOS.AppImage";
-          sha256 = "0g4ra9w0r0238a7c8gfzq8z2masvbcrhdghc661k5qb21s1c0p91";
+          sha256 = "1fxvmsv26vpfn5m3yzwigpby4dfqfhx4mbd277s1ykvi6i3w8plg";
         };
 
         browseros = pkgs.appimageTools.wrapType2 {
@@ -27,34 +33,48 @@
           nativeBuildInputs = [ pkgs.makeWrapper ];
 
           # Chromium runtime libs not bundled in the AppImage
-          extraPkgs = epkgs: with epkgs; [
-            libudev0-shim libusb1 openssl nss nspr
-            alsa-lib libpulse gtk3 cups
-            xorg.libxshmfence xorg.libxkbcommon xorg.libXdamage xorg.libXrandr
-            mesa wayland dbus libglvnd
-          ];
+          extraPkgs =
+            epkgs: with epkgs; [
+              libudev0-shim
+              libusb1
+              openssl
+              nss
+              nspr
+              alsa-lib
+              libpulse
+              gtk3
+              cups
+              xorg.libxshmfence
+              xorg.libxkbcommon
+              xorg.libXdamage
+              xorg.libXrandr
+              mesa
+              wayland
+              dbus
+              libglvnd
+            ];
 
           extraInstallCommands = ''
-            # Chromium's SUID sandbox can't run from the Nix store → disable it
-            wrapProgram $out/bin/browseros \
-              --add-flags "--no-sandbox"
+                        # Chromium's SUID sandbox can't run from the Nix store → disable it
+                        wrapProgram $out/bin/browseros \
+                          --add-flags "--no-sandbox"
 
-            # Desktop entry
-            mkdir -p $out/share/applications
-            cat > $out/share/applications/browseros.desktop <<'EOF'
-[Desktop Entry]
-Name=BrowserOS
-Exec=browseros %U
-Type=Application
-Icon=browseros
-Categories=Network;WebBrowser;
-MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
-EOF
+                        # Desktop entry
+                        mkdir -p $out/share/applications
+                        cat > $out/share/applications/browseros.desktop <<'EOF'
+            [Desktop Entry]
+            Name=BrowserOS
+            Exec=browseros %U
+            Type=Application
+            Icon=browseros
+            Categories=Network;WebBrowser;
+            MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
+            EOF
 
-            # Icon (extracted from AppImage by wrapType2)
-            if [ -f $out/lib/browseros/browseros.png ]; then
-              install -Dm644 $out/lib/browseros/browseros.png $out/share/pixmaps/browseros.png
-            fi
+                        # Icon (extracted from AppImage by wrapType2)
+                        if [ -f $out/lib/browseros/browseros.png ]; then
+                          install -Dm644 $out/lib/browseros/browseros.png $out/share/pixmaps/browseros.png
+                        fi
           '';
 
           meta = with lib; {
@@ -89,5 +109,6 @@ EOF
             echo "→ install CLI: go install github.com/browseros-ai/BrowserOS/apps/cli/cmd/browseros-cli@latest"
           '';
         };
-      });
+      }
+    );
 }
