@@ -2,8 +2,6 @@
 
 Nix flake packaging the upstream [BrowserOS](https://github.com/browseros-ai/BrowserOS) AppImage.
 
-BrowserOS is an open-source Chromium fork with built-in AI agents — alternative to ChatGPT Atlas / Perplexity Comet. Upstream license: **AGPL-3.0**. This packaging repo is **MIT**.
-
 ## Install
 
 ### One-shot via Nix profile
@@ -68,19 +66,11 @@ The repository does not currently include a `flake.lock`. Run `nix flake lock` a
 
 ## Updating the AppImage hash
 
-BrowserOS doesn't version their AppImage URL. When you want to bump:
+BrowserOS doesn't version their AppImage URL. When changed:
 
 ```bash
 ./update.sh
 ```
-
-Or manually:
-
-```bash
-nix-prefetch-url --type sha256 https://files.browseros.com/download/BrowserOS.AppImage
-```
-
-Paste the output into `src.sha256` in `flake.nix`.
 
 ## What's inside
 
@@ -102,14 +92,6 @@ go install github.com/browseros-ai/BrowserOS/apps/cli/cmd/browseros-cli@latest
 browseros-cli init
 ```
 
-## NixOS gotchas handled
-
-| Issue | Fix |
-|---|---|
-| Chromium SUID sandbox can't run from `/nix/store` | `--no-sandbox` flag |
-| AppImage needs FUSE | `wrapType2` extracts the squashfs → no FUSE needed |
-| Missing .so files (nss, nspr, gtk, mesa, etc.) | `extraPkgs` adds them to runtime closure |
-| Desktop integration | Generated `.desktop` + icon in `share/` |
 
 ## License
 
