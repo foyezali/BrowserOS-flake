@@ -37,10 +37,10 @@
             pulseaudio
             gtk3
             cups
-            xorg.libxshmfence
-            xorg.libxkbcommon
-            xorg.libXdamage
-            xorg.libXrandr
+            libxshmfence
+            libxkbcommon
+            libXdamage
+            libXrandr
             mesa
             wayland
             dbus
