@@ -22,6 +22,7 @@
 
         browseros = pkgs.appimageTools.wrapType2 {
           name = "browseros";
+          version = "rolling";
           inherit src;
 
           nativeBuildInputs = [ pkgs.makeWrapper ];
