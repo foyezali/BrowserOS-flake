@@ -22,6 +22,7 @@
 
         browseros = pkgs.appimageTools.wrapType2 {
           name = "browseros";
+          pname = "browseros";
           version = "rolling";
           inherit src;
 
