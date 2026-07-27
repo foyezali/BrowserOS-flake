@@ -47,6 +47,8 @@
             wayland
             dbus
             libglvnd
+            libva
+            intel-media-driver
           ];
 
           extraInstallCommands = ''
