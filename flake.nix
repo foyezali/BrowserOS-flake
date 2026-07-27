@@ -94,6 +94,10 @@
         apps.browseros = {
           type = "app";
           program = "${browseros}/bin/browseros";
+          meta = with lib; {
+            description = "BrowserOS — open-source agentic Chromium fork";
+            mainProgram = "browseros";
+          };
         };
         apps.default = self.apps.${system}.browseros;
 
