@@ -17,7 +17,7 @@
         # Get the new hash with:  nix-prefetch-url --type sha256 <url>
         src = pkgs.fetchurl {
           url = "https://files.browseros.com/download/BrowserOS.AppImage";
-          sha256 = "190dyvl3v990p8l9fsnpvgjq741gb1wafzyic28k3zs4m7fng28n";
+          sha256 = "1gz7wcal5hcww145v5ri1k5x8pijcdj1pk6il8p6w11w11rdz1mm";
         };
 
         browseros = pkgs.appimageTools.wrapType2 {
